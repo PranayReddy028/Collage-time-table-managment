@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Time Table Management System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background: #333;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        nav ul li {
+            display: inline;
+            margin: 0 10px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+        }
+
+        main {
+            padding: 1rem;
+        }
+
+        form {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin: 0.5rem 0;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        button {
+            background-color: #333;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #555;
+        }
+
+        #announcement-list, #schedule-view {
+            margin-top: 1rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>College Time Table Management System</h1>
+        <nav>
+            <ul>
+                <li><a href="#create-schedule" class="nav-link" data-role="admin faculty">Create Schedule</a></li>
+                <li><a href="#view-schedule" class="nav-link" data-role="admin faculty student">View Schedule</a></li>
+                <li><a href="#announcements" class="nav-link" data-role="admin faculty">Announcements</a></li>
+                <li><a href="#attendance" class="nav-link" data-role="admin faculty student">Attendance</a></li>
+                <li><a href="#login" id="login-link">Login</a></li>
+                <li><a href="#logout" id="logout-link" class="hidden">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="login" class="hidden">
+            <h2>Login</h2>
+            <form id="login-form">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+                
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+                
+                <button type="submit">Login</button>
+            </form>
+        </section>
+
+        <section id="create-schedule" class="hidden">
+            <h2>Create or Edit Schedule</h2>
+            <form id="schedule-form">
+                <label for="course">Course:</label>
+                <input type="text" id="course" name="course" required>
+                
+                <label for="day">Day:</label>
+                <select id="day" name="day" required>
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                </select>
+                
+                <label for="time">Time:</label>
+                <input type="time" id="time" name="time" required>
+
+                <button type="submit">Save Schedule</button>
+            </form>
+        </section>
+
+        <section id="view-schedule" class="hidden">
+            <h2>View Schedule</h2>
+            <div id="schedule-view"></div>
+        </section>
+
+        <section id="announcements" class="hidden">
+            <h2>Announcements</h2>
+            <form id="announcement-form">
+                <label for="announcement">Announcement:</label>
+                <textarea id="announcement" name="announcement" required></textarea>
+                <button type="submit">Post Announcement</button>
+            </form>
+            <div id="announcement-list"></div>
+        </section>
+
+        <section id="attendance" class="hidden">
+            <h2>Track Attendance</h2>
+            <form id="attendance-form">
+                <label for="student-name">Student Name:</label>
+                <input type="text" id="student-name" name="student-name" required>
+                
+                <label for="class">Class:</label>
+                <select id="class" name="class" required>
+                    <option value="CSE">CSE</option>
+                    <option value="CSM">CSM</option>
+                    <option value="CSN">CSN</option>
+                    <option value="CSO">CSO</option>
+                </select>
+                
+                <button type="submit">Mark Attendance</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 College Time Table Management System</p>
+    </footer>
+
+    <script>
+        // Simulated user roles for demonstration
+        let currentUser = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginForm = document.getElementById('login-form');
+            const loginLink = document.getElementById('login-link');
+            const logoutLink = document.getElementById('logout-link');
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            loginForm.addEventListener('submit', (event) => {
+                event.preventDefault();
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+
+                // Simple role assignment based on username (for demonstration)
+                if (username === 'admin' && password === 'admin') {
+                    currentUser = 'admin';
+                } else if (username === 'faculty' && password === 'faculty') {
+                    currentUser = 'faculty';
+                } else if (username === 'student' && password === 'student') {
+                    currentUser = 'student';
+                } else {
+                    alert('Invalid credentials');
+                    return;
+                }
+
+                updateUI();
+                alert('Logged in as ' + currentUser);
+            });
+
+            logoutLink.addEventListener('click', (event) => {
+                event.preventDefault();
+                currentUser = null;
+                updateUI();
+                alert('Logged out');
+            });
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', (event) => {
+                    const allowedRoles = link.getAttribute('data-role').split(' ');
+                    if (currentUser && allowedRoles.includes(currentUser)) {
+                        document.querySelector(link.getAttribute('href')).scrollIntoView();
+                    } else {
+                        event.preventDefault();
+                        alert('Access denied');
+                    }
+                });
+            });
+
+            function updateUI() {
+                document.querySelectorAll('.hidden').forEach(el => el.classList.add('hidden'));
+                if (currentUser) {
+                    document.getElementById('logout-link').classList.remove('hidden');
+                    document.querySelectorAll('.nav-link').forEach(link => {
+                        const allowedRoles = link.getAttribute('data-role').split(' ');
+                        if (allowedRoles.includes(currentUser)) {
+                            document.querySelector(link.getAttribute('href')).classList.remove('hidden');
+                        }
+                    });
+                } else {
+                    document.getElementById('login').classList.remove('hidden');
+                    document.getElementById('login-link').classList.remove('hidden');
+                }
+            }
+
+            // Initialize UI based on current user
+            updateUI();
+        });
+    </script>
+</body>
+</html>
